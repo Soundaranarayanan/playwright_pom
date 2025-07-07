@@ -2,30 +2,37 @@ import { Then } from "@cucumber/cucumber";
 import { expect } from "@playwright/test";
 import { pageFixture } from "../../hooks/pageFixture";
 
-Then('User search the book {string}', async function (book: string) {
-  await pageFixture.page.locator("//input[@type='search']").fill(book);
-  const option = pageFixture.page.locator("//mat-option//span").first();
 
-  if (await option.isVisible({ timeout: 5000 })) {
-    await option.click();
-  } else {
-    console.log(`No search results found for: ${book}`);
-  }
+Then('User search the book {string}', async function (book) {
+    const searchBox = pageFixture.page.locator("//input[@type='search']");
+    await searchBox.fill(book);
+
+    const option = pageFixture.page.locator("mat-option[role='option'] span").first();
+
+    try {
+        await option.waitFor({ state: 'visible', timeout: 5000 });
+        await option.click();
+    } catch (error) {
+        console.warn(`No suggestions available for book: "${book}"`);
+        // Optional: assert if it's a negative test
+    }
 });
+
 
 Then('User add the book to cart', async function () {
-  const bookTitle = await pageFixture.page.locator("//mat-card-title").first().textContent();
-  const addToCart = pageFixture.page.locator(`//mat-card[.//mat-card-title[contains(text(),"${bookTitle?.trim()}")]]//button[@color='primary']`);
+    // await this.page.locator("(//span[@class='mdc-button__label'][normalize-space()='Add to Cart'])[1]").click();
+    const addtoCart = await pageFixture.page.locator("(//span[@class='mdc-button__label'][normalize-space()='Add to Cart'])[1]").first();
+    await addtoCart.waitFor({ state: 'visible' });
+    await addtoCart.click();
 
-  await expect(addToCart).toBeVisible({ timeout: 10000 });
-  await addToCart.click();
-
-  const toast = pageFixture.page.locator("simple-snack-bar");
-  await expect(toast).toBeVisible({ timeout: 10000 });
-  await toast.waitFor({ state: 'hidden', timeout: 10000 });
-});
+    const toast = pageFixture.page.locator("simple-snack-bar");
+    await expect(toast).toBeVisible();
+    await toast.waitFor({ state: 'hidden' });
+         });
 
 Then('User can view the book carted', async function () {
-  const badgeLocator = await pageFixture.page.locator("#mat-mdc-badge-content-0").textContent();
-  expect(Number(badgeLocator)).toBeGreaterThan(0);
-});
+
+    const badgelocator = await pageFixture.page.locator("//span[@id='mat-badge-content-0']").textContent();
+    const badgelocatorNumber = parseInt(badgelocator || '0', 10);
+    await expect(badgelocatorNumber).toBeGreaterThan(0);
+         });

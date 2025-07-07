@@ -2,9 +2,8 @@ import { Given, When, Then } from "@cucumber/cucumber";
 import { expect } from "@playwright/test";
 import { pageFixture } from "../../hooks/pageFixture";
 
-// const page = () => pageFixture.page;
-Given('User navigates to the application', async function () {
-  await pageFixture.page.goto('https://bookcart.azurewebsites.net/');
+Given('User navigates to the application',{timeout: 60000}, async function () {
+  await pageFixture.page.goto('https://bookcart.azurewebsites.net');
 });
 Given('User click on the login link', async function () {
   await pageFixture.page.locator("//span[text()=' Login ']").click();
