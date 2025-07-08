@@ -1,46 +1,3 @@
-// import { Before, After,BeforeAll,AfterAll, setDefaultTimeout, Status } from '@cucumber/cucumber';
-// import { chromium, Browser, Page ,BrowserContext} from '@playwright/test';
-// import { pageFixture } from './pageFixture';
-
-// let browser: Browser;
-// let context:BrowserContext;
-
-
-// BeforeAll(async function () {
-// browser = await chromium.launch({headless:false});
-// });
-
-
-// Before(async function () {
-//   context = await browser.newContext();
-//   const page = await context.newPage();
-//   pageFixture.page = page;
-// });
-
-
-
-// After(async function ({pickle,result}) {
-//   console.log(result?.status);
-//   if(result?.status == Status.FAILED){
-//     const img = await pageFixture.page.screenshot({path: `./test-result/screenshots/${pickle.name}.png`,type: "png"})
-//     await this.attach(img,"image/png");
-//   }
-//   await pageFixture.page.close();
-//   await context.close();
-  
-// });
-
-
-// // After(async function (){
-// //   await pageFixture.page.close();
-// //   await context.close();
-// // });
-
-
-// AfterAll(async function () {
-//   await browser.close();
-// });
-
 import {
   BeforeAll,
   Before,
@@ -51,19 +8,17 @@ import {
 } from '@cucumber/cucumber';
 import { chromium, Browser, BrowserContext, Page } from '@playwright/test';
 import { pageFixture } from './pageFixture';
-
+import { getEnv } from '../helper/env/env';
+import { invokeBrowser } from '../helper/browsers/browserManager';
 let browser: Browser;
 let context: BrowserContext;
 
-// Set default timeout for all steps/hooks (60 seconds)
 setDefaultTimeout(60 * 1000);
 
-// Launch browser before all tests
 BeforeAll(async function () {
-  browser = await chromium.launch({
-    headless: true, // ✅ change to true for Jenkins
-    args: ['--no-sandbox', '--disable-dev-shm-usage'],
-  });
+  getEnv();
+  browser = await invokeBrowser();
+
 });
 
 // Create new context + page before each scenario

@@ -3,7 +3,12 @@ import { expect } from "@playwright/test";
 import { pageFixture } from "../../hooks/pageFixture";
 
 Given('User navigates to the application',{timeout: 60000}, async function () {
-  await pageFixture.page.goto('https://bookcart.azurewebsites.net');
+const baseurl = process.env.BASEURL;
+  if (!baseurl) {
+    throw new Error('BASE_URL is not defined in the environment variables');
+  }
+  await pageFixture.page?.goto(baseurl);
+ 
 });
 Given('User click on the login link', async function () {
   await pageFixture.page.locator("//span[text()=' Login ']").click();

@@ -1,5 +1,13 @@
 const report = require("multiple-cucumber-html-reporter");
-
+const dateFormatOptions = {
+  year: 'numeric' as const,
+  month: 'short' as const,
+  day: 'numeric' as const,
+  hour: '2-digit' as const,
+  minute: '2-digit' as const,
+  hour12: true,
+  timeZoneName: 'short' as const
+};
 report.generate({
   jsonDir: "test-results",
   reportPath: "multipleReport",
@@ -22,8 +30,8 @@ report.generate({
       { label: "Project", value: "Book Cart Project" },
       { label: "Release", value: "1.2.3" },
       { label: "Cycle", value: "smoke-1" },
-      { label: "Execution Start Time", value: "Nov 19th 2017, 02:31 PM EST" },
-      { label: "Execution End Time", value: "Nov 19th 2017, 02:56 PM EST" },
+      { label: "Execution Start Time", value: new Date().toLocaleString('en-US', dateFormatOptions) },
+      { label: "Execution End Time", value: new Date().toLocaleString('en-US', dateFormatOptions) }
     ],
   },
 });
