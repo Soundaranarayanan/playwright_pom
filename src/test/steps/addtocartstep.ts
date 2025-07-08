@@ -14,7 +14,6 @@ Then('User search the book {string}', async function (book) {
         await option.click();
     } catch (error) {
         console.warn(`No suggestions available for book: "${book}"`);
-        // Optional: assert if it's a negative test
     }
 });
 

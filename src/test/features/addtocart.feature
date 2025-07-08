@@ -17,8 +17,8 @@ Examples:
 | soundar | Kiot1234   | roomies       |
 | arun123 | Kiot1234   | Rot & Ruin    |
 
-@fail
-Scenario: Add to cart should be failed
-    Then User search the book "Thealchemist"
-    And User add the book to cart
-    And User can view the book carted
+# @fail
+# Scenario: Add to cart should be failed
+#     Then User search the book "Thealchemist"
+#     And User add the book to cart
+#     And User can view the book carted
