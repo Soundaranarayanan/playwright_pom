@@ -7,6 +7,8 @@ import {
   Status,
 } from '@cucumber/cucumber';
 import { chromium, Browser, BrowserContext, Page } from '@playwright/test';
+import { createLogger } from 'winston';
+import { options } from '../helper/util/logger';
 import { pageFixture } from './pageFixture';
 import { getEnv } from '../helper/env/env';
 import { invokeBrowser } from '../helper/browsers/browserManager';
@@ -21,28 +23,29 @@ BeforeAll(async function () {
 
 });
 
-// Create new context + page before each scenario
-Before(async function () {
+
+Before(   async function ({pickle}) {
+  const scenarioName = pickle.name + pickle.id;
   context = await browser.newContext();
   const page = await context.newPage();
   pageFixture.page = page;
+  pageFixture.logger = createLogger(options(scenarioName));
+  
 });
 
-// Close page/context after each scenario and capture screenshot if failed
-After(async function ({ pickle, result }) {
-  if (result?.status === Status.FAILED) {
-    const img = await pageFixture.page.screenshot({
-      path: `./test-results/screenshots/${pickle.name}.png`,
-      type: 'png',
-    });
-    await this.attach(img, 'image/png');
-  }
+After(async function ({pickle,result}) {
+    console.log(result?.status);
+    if (result?.status == Status.FAILED && pageFixture.page) {
+      const screenshot = await pageFixture.page.screenshot({path:`./test-result/screenshots/${pickle.name}.png`,type: 'png'});
+      this.attach(screenshot, 'image/png');
+    }
+    if (pageFixture.page) {
+      await pageFixture.page.close();
+    }
+    await context.close();
+    await pageFixture.logger?.close();
+  });
 
-  await pageFixture.page.close();
-  await context.close();
-});
-
-// Close browser after all scenarios
 AfterAll(async function () {
   await browser.close();
 });
